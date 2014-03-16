@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>AutoHeight CSS Transition</title>
+        <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+
+    <style type="text/css">
+        html, body {
+            height: 100%;
+            margin:0;
+        }
+        body{
+            background-color:#000;
+            position:relative;
+            z-index:0;
+        }
+        body * {
+            position: relative;
+            z-index: 10;
+        }
+        #wrapper {
+            margin:100px;
+            width: 300px;
+        }
+        #btn {
+            border:1px solid #fff;
+            border-width:1px 1px 0;
+            background-color:#ccc;
+            border-radius:12px 12px 0 0;
+            cursor:pointer;
+            float:right;
+            text-align:center;
+            width:50px;
+        }
+        #txt {
+            background-color:#bbb;
+            border:1px solid #fff;
+            clear:both;
+            height:auto;
+            max-height:350px;   /*  this is a caveat to the layout */
+            padding:5px;
+            transition: max-height 1s ease-in-out;
+        }
+
+
+
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var curTxt = $("#txt");
+            var curHeight = curTxt.height();
+
+            $("#btn").click(function () {
+                if (curTxt.height() === 30) {
+                    curTxt.animate({"height": curHeight}, 800);
+                }
+                else {
+                    curTxt.animate({"height":30}, 800);
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+
+    <div id="wrapper">
+        <div id="btn">click</div>
+        <div id="txt">
+            this is the main text that shows at all times.
+            <p>This below is the show/hide part.</p>
+            <p>
+                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>

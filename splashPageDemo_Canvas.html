@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Splash Demo</title>
+    <meta name="viewport" content="width=device-width" />
+    <link href="style.css" rel="stylesheet" />
+
+    <style type="text/css">
+        html, body {
+            height: 100%;
+        }
+        body{
+            background-color:#000;
+            position:relative;
+            z-index:0;
+        }
+        body * {
+            position: relative;
+            z-index: 10;
+        }
+        img {
+            transition: opacity 1s ease-in-out;
+        }
+    
+        .site-header{ display:none; }
+
+        @media screen and (min-width: 1920px){
+            body{
+                /* move this to the page template */
+                /* background: url(img/splash1.jpg) no-repeat center center fixed; */
+            }
+            body, #splashImages {
+            /* need to move this to style.css */
+                -webkit-background-size: cover;
+                -moz-background-size: cover;
+                -o-background-size: cover;
+                background-size: cover; 
+            }
+        }
+
+
+        #homePageContent{
+            height:100%;
+            width:100%;
+            text-align:center;
+        }
+        #enterSite{
+            display:inline-block;
+            margin:0 auto;
+            padding-top:160px;
+        }
+        .innerWrap {
+            background: rgba(255, 255, 255, 0.3);
+            height:auto;
+            width:auto;
+            overflow:hidden;
+            padding:8px;
+            position:relative;
+            transition:all 0.2s ease;
+        }
+        .outTheBox {
+            border-radius:65px 65px 6px 88px;
+            -moz-border-radius:65px 65px 6px 88px;
+            -webkit-border-radius:65px 65px 6px 88px;
+            
+        }
+        .innerWrap a {
+            margin-left:12px;
+        }
+        .innerWrap img {
+            width: 65px;
+            transition:all 0.7s ease;
+        }
+        .innerWrap img.pushTheBox {
+            width: 135px;
+        }
+        p{
+            color:#fff;
+            font-size:21px;
+            position:absolute;
+            right:300px;
+            top:65px;
+            transition:all 0.5s ease-in-out;
+        }
+        p.pushOut {
+            right:8px;
+        }
+
+        #splashImages {
+            background:center center fixed no-repeat;
+            position:absolute;
+            z-index:0;
+        }
+    </style>
+
+    <!--[if lt IE 9]>
+        <script src="js/html5.js" type="text/javascript"></script>
+    <![endif]-->
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var dCanvas = document.getElementById('splashImages');
+            var ctx = dCanvas.getContext('2d');
+            var img = new Image;
+            var imgW, imgH, winW, winH, ctxW, ctxH;
+
+            // Create an array of images that you'd like to use
+            var images = [
+                "img/splash1.jpg",
+                "img/splash2.jpg",
+                "img/splash3.jpg",
+                "img/splash4.jpg",
+                "img/splash5.jpg",
+            ];
+            //preload images
+            $(images).each(function () {
+                $('<img/>')[0].src = this;
+            });
+
+
+            function setCanvasAspect(_imgAlpha) {
+                //get aspect ratio
+                winW = window.innerWidth;
+                winH = window.innerHeight;
+
+                //set context props
+                ctx.globalAlpha = _imgAlpha;
+                ctx.canvas.width = winW;
+                ctx.canvas.height = winH;
+                ctxW = winW;
+                ctxH = winH;
+
+                var widthRatio = winW / img.width;
+                var heightRatio = winH / img.height;
+                var widthDiff = heightRatio * img.width;
+                var heightDiff = widthRatio * img.height;
+
+                //resize image proportionately
+                if (heightDiff > winH) {
+                    imgW = winW;
+                    imgH = heightDiff;
+                }
+                else {
+                    imgW = widthDiff;
+                    imgH = winH;
+                }
+
+                //set location of resized img
+                newX = parseInt((ctxW - imgW) / 2);
+                newY = parseInt((ctxH - imgH) / 2);
+            }
+
+            function hideTheArtist(_hide) {
+                var innerWrap = $(".innerWrap");
+                var theArtist = $(".innerWrap img");
+                var pTxt = $("#enterSite p");
+
+                if (_hide && innerWrap.is(":visible")) {
+                    innerWrap.css("visibility", 'hidden').removeClass("outTheBox");
+                    theArtist.removeClass("pushTheBox");
+                    pTxt.removeClass("pushOut");
+                    return;
+                }
+
+                if (!_hide) {
+                    innerWrap.css("visibility", '');
+                    theArtist.addClass("pushTheBox");
+                    innerWrap.addClass("outTheBox");
+                    pTxt.addClass("pushOut");
+                }
+            }
+            hideTheArtist(false);
+
+
+            function drawImg() {
+                setCanvasAspect(0.5);
+
+                //do fadeIn
+                var cnt = 4;
+                var imgFadeIn = setInterval(function () {
+                    if (cnt === 10) {
+                        clearInterval(imgFadeIn);
+                    }
+                    //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    ctx.globalAlpha = cnt / 10;
+                    ctx.drawImage(img, 0, 0, img.width, img.height, newX, newY, imgW, imgH);
+                    cnt++;
+                }, 60);
+            }
+
+
+            $(window).resize(function () {
+                setCanvasAspect(1);
+                ctx.drawImage(img, 0, 0, img.width, img.height, newX, newY, imgW, imgH);
+            });
+
+
+            //now start the slideshow
+            var imgCnt = 0;
+            var showNextImg = setInterval(function () {
+                strDataURI = images[imgCnt];
+                img = new Image;
+                img.onload = drawImg;
+                img.src = strDataURI;
+                imgCnt++;
+
+                hideTheArtist(true);
+
+                if (imgCnt === 5) {
+                    hideTheArtist(false);
+                    //clearInterval(showNextImg);
+                    imgCnt = 0;
+                }
+            }, 4500);
+        });
+    </script>
+</head>
+<body>
+    <canvas id="splashImages"></canvas>
+
+    <div id="homePageContent">
+        <div id="enterSite">
+            <div class="innerWrap">
+                <a href="#" rel="home"><img src="img/theArtist.png" alt="" /></a>
+                <p>I love what I do!</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
